@@ -27,3 +27,6 @@ class Valores(models.Model):
     valor = models.FloatField(null=True)
     fecha = models.DateTimeField(default=timezone.now)
     tag = models.ForeignKey(Tags, related_name="tags", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{}".format(self.valor)
