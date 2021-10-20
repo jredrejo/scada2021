@@ -1,0 +1,21 @@
+{% extends "scada/plantilla.html" %}
+
+{% block content %}
+
+
+
+{% if valores %}
+<ul>
+{% for valor in valores %}
+<li>{{ valor.tag.nombre }} -- {{ valor.fecha }} -- {{valor.valor }}</li>
+{% endfor %}
+</ul>
+{% else %}
+<p>No hay valores para esta tag.</p>
+{% endif %}
+
+<h1>Aquí pongo otra variable {{dos}}</h1>
+
+
+
+{% endblock %}
