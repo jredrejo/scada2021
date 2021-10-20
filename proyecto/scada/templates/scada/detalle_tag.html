@@ -1,0 +1,16 @@
+{% extends "scada/plantilla.html" %}
+
+{% block content %}
+
+
+
+    {% if tag %}
+    <ul>
+    <li>Nombre: {{ tag.nombre }}</li>
+    <li>Dirección: {{ tag.direccion }}</li>
+    <li>Tipo: {{ tag.tipo }}</li>
+    </ul>
+    {% endif %}
+
+
+{% endblock %}
