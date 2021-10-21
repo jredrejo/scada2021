@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import FileResponse
@@ -30,7 +31,7 @@ def info(request):
     print(request.GET)
     return HttpResponse("Mira en el terminal de Django")
 
-
+@login_required()
 def detalle_tag(request, pk):
     tag = get_object_or_404(Tags, pk=pk)
     return render(request, "scada/detalle_tag.html", {"tag": tag})
