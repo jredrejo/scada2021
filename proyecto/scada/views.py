@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import FileResponse
@@ -11,13 +12,13 @@ from django.http import JsonResponse
 from .models import Tags
 from .models import Valores
 
-
 def index(request):
     tags = Tags.objects.order_by("tipo").all()
     datos = {"tags": tags, "ejemplo": datetime.datetime.now()}
     return render(request, "scada/index.html", datos)
 
 
+@permission_required('scada.view_tags')
 def prueba(request):
     tag = Tags.objects.get(id=1)
     valores = Valores.objects.filter(tag=tag)
