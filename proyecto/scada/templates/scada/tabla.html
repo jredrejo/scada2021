@@ -1,0 +1,41 @@
+{% extends "scada/plantilla.html" %}
+
+{% block content %}
+
+
+
+<h3>Valores recogidos</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Tag</th>
+            <th scope="col">Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for valor in valores %}
+        <tr>
+            <th scope="row">{{valor.id}}</th>
+            <td>{{valor.fecha}}</td>
+            <td>{{valor.tag.nombre}}</td>
+            <td>{{valor.valor}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<form action="" method="get">
+    <h4>Filtrar por tag</h4>
+        <select name="tag" class ="form-select" onchange="this.form.submit();">
+        <option value="" {% if  tag_id == None %} selected {%endif %}>Todas</option>
+
+        {% for tag in tags %}
+        <option  value="{{tag.id}}" {% if tag_id == tag.id %} selected {% endif %}>{{tag.nombre}}</option>
+        {% endfor %}
+    </select>
+
+</form>
+<hr>
+{% endblock %}

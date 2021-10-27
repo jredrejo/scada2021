@@ -64,3 +64,17 @@ def descargar(request):
     )
     response = FileResponse(open(filename, "rb"))
     return response
+
+
+def tabla(request):
+    tag_id = request.GET.get("tag", None)
+    if tag_id:
+        valores = Valores.objects.filter(tag_id=tag_id).all()
+        tag_id = int(tag_id)
+    else:
+        valores = Valores.objects.all()
+
+    tags = Tags.objects.all().order_by('nombre')
+
+    datos = {'valores': valores, 'tags': tags, 'tag_id': tag_id}
+    return render(request, 'scada/tabla.html', datos)
