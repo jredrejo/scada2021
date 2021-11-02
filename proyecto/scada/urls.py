@@ -9,4 +9,6 @@ urlpatterns = [
     path('seno', views.seno, name='senoidal'),
     path('descargar', views.descargar, name='descarga'),
     path('tabla', views.tabla, name='tabla'),
+    path('boton', views.boton, name='boton'),
+    path('compruebaboton', views.comprueba_boton, name='boton'),
 ]

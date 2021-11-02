@@ -1,0 +1,119 @@
+{% extends "scada/plantilla.html" %}
+
+{% block content %}
+
+
+
+<div class="container my-5">
+    <div class="row align-items-center mb-5">
+        <div class="col">
+            <button id="btnPost" type="button" class="btn btn-primary">Mira a ve si hay que enseñar el spinner</button>
+        </div>
+        <div class="col">
+            <div id="spinner" class="invisible spinner-border text-danger" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+
+    </div>
+    <div class="row align-items-center my-5">
+        <div class="col">
+            <button id="btnSubmit" type="button" class="btn btn-primary">Enviar esta clave:</button>
+
+        </div>
+        <div class="col">
+            <form id="el_form" action="/scada/compruebaboton" method="POST">
+                <input type="text" name="frm_key" id="frmInput">
+            </form>
+        </div>
+
+    </div>
+    <div class="row align-items-center mt-5">
+        <div class="col">
+            <button id="btnFalsoSubmit" type="button" class="btn btn-primary">Enviar esta clave con falso
+                formulario:</button>
+
+        </div>
+        <div class="col">
+            <input type="text" name="falso_form" id="frmFalsoInput">
+        </div>
+        <div class="col">
+            <label id="idLabel"></label>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    const boton = document.getElementById("btnPost")
+    boton.addEventListener("click", hacer_post_sin_formulario)
+    const spinner = document.getElementById("spinner")
+
+
+    const btnForm = document.getElementById("btnSubmit")
+    btnForm.addEventListener("click", hacer_post_con_formulario)
+
+
+    const btnFalsoForm = document.getElementById("btnFalsoSubmit")
+    btnFalsoForm.addEventListener("click", post_con_formulario_simulado)
+    const txtFalso = document.getElementById("frmFalsoInput")
+    const label = document.getElementById("idLabel")
+
+
+    function hacer_post_con_formulario() {
+        document.getElementById('el_form').submit();
+    }
+
+    function post_con_formulario_simulado() {
+        const url = '/scada/compruebaboton'
+        const data = new FormData()
+        data.append('api_key', txtFalso.value)
+        fetch(url, {
+            method: "POST",
+            body: data,
+        }).then(function (respuestaBruta) {
+            if (respuestaBruta.status != 200) {
+                label.textContent = `Error: ${respuestaBruta.statusText}`
+            } else
+                respuestaBruta.json().then(function (respuesta) {
+                    label.textContent = respuesta.valor
+
+                })
+        })
+
+    }
+
+    function hacer_post_sin_formulario() {
+        const url = '/scada/compruebaboton'
+        const data = {
+            'api_key': 'ari'
+        }
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // credentials: 'include',   // esto es necesario si el usuario está autenticado
+            },
+            body: JSON.stringify(data)
+        }).then(function (respuestaBruta) {
+            respuestaBruta.json().then(function (respuesta) {
+                if (respuesta['valor'] == 1) {
+                    if (spinner.classList.contains('invisible'))
+                        spinner.classList.remove('invisible')
+                } else {
+                    if (!spinner.classList.contains('invisible'))
+                        spinner.classList.add('invisible')
+                }
+
+            })
+        }).catch(error => console.error('Error:', error))
+    }
+</script>
+
+
+
+{% endblock %}

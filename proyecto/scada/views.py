@@ -9,8 +9,10 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import Tags
 from .models import Valores
+
 
 def index(request):
     tags = Tags.objects.order_by("tipo").all()
@@ -78,3 +80,34 @@ def tabla(request):
 
     datos = {'valores': valores, 'tags': tags, 'tag_id': tag_id}
     return render(request, 'scada/tabla.html', datos)
+
+
+def boton(request):
+    return render(request, 'scada/boton.html')
+
+
+@csrf_exempt
+def comprueba_boton(request):
+    import json
+    import random
+    print(request.POST)
+
+    if "frm_key" in request.POST:
+        return HttpResponse("Ya está")
+
+    elif 'api_key' in request.POST:
+        datos_recibidos = request.POST
+    else:
+        datos_recibidos = json.loads(request.body)
+
+    if "api_key" in datos_recibidos:
+        api_key = datos_recibidos["api_key"]
+        if api_key != "ari":
+            return HttpResponseForbidden("Sin autorización")
+    else:
+        return HttpResponseBadRequest("Error")
+
+    fecha = datetime.datetime.now()
+    x = random.randint(0, 1)
+    datos = {"valor": x, "fecha": fecha}
+    return JsonResponse(datos)
