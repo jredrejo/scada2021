@@ -1,0 +1,107 @@
+{% extends "scada/plantilla.html" %}
+
+{% block content %}
+
+
+
+<div class="container my-5">
+    <div class="row align-items-center mb-5">
+        <div class="col">
+            <h2>Datos del tag:</h2>
+        </div>
+        <div class="col">
+            <h3>Desde:</h3>
+        </div>
+        <div class="col">
+            <h3>Hasta:</h3>
+        </div>
+    </div>
+    <div class="row align-items-center my-5">
+        <div class="col">
+            <select name="selectTag" id="selectTag">
+                <option value="">Selecciona el Tag:</option>
+                {% for tag in tags %}
+                <option value="{{ tag.id }}">{{tag.nombre}}</option>
+                {% endfor %}
+            </select>
+
+        </div>
+        <div class="col">
+            <input type="date" name="desde" id="fechaDesde">
+        </div>
+        <div class="col">
+            <input type="date" name="hasta" id="fechaHasta">
+        </div>
+    </div>
+    <div class="row align-items-center mt-5">
+        <div class="col">
+            <div id="graph"></div>
+
+        </div>
+
+    </div>
+</div>
+{% load static %}
+<script src="{% static 'js/plotly-latest.min.js' %}"></script>
+<script>
+    const selectTab = document.getElementById("selectTag")
+    const desde = document.getElementById("fechaDesde")
+    const hasta = document.getElementById("fechaHasta")
+
+    selectTab.addEventListener("change", hacer_post)
+    desde.addEventListener("change", hacer_post)
+    hasta.addEventListener("change", hacer_post)
+
+    const layout = { // Titulo y nombre de los ejes
+        title: 'Gráfica de valores',
+        xaxis: {
+            title: 'Tiempo'
+        },
+        yaxis: {
+            title: 'Valores'
+        }
+    };
+
+    function hacer_post() {
+
+        const tag = selectTab.value
+        const inicio = desde.value
+        const fin = hasta.value
+        if (tag == "" || inicio == "" || fin == "") return;
+
+        const url = '/scada/datosgrafica'
+        const data = new FormData()
+        data.append('desde', inicio)
+        data.append('hasta', fin)
+        data.append('tag', tag)
+        fetch(url, {
+            method: "POST",
+            body: data,
+        }).then(function (respuestaBruta) {
+            if (respuestaBruta.status != 200) {
+                label.textContent = `Error: ${respuestaBruta.statusText}`
+            } else
+                respuestaBruta.json().then(function (respuesta) {
+
+
+                    var trace1 = {
+                        type: "scatter",
+                        mode: "lines",
+                        x: Object.keys(respuesta.datos),
+                        y: Object.values(respuesta.datos),
+                        line: {
+                            color: '#17BECF'
+                        }
+                    }
+
+
+                    var data = [trace1];
+                    Plotly.newPlot('graph', data, layout)
+
+                })
+        })
+
+    }
+</script>
+
+{% endblock %}
